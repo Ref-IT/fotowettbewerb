@@ -1,0 +1,3 @@
+ul.table {display: table; }
+ul.table li {display: table-row; }
+ul.table li * {display: table-cell; }
