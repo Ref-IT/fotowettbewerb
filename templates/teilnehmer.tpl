@@ -28,6 +28,7 @@
 
 Es können nur Dateien vom Typ "image/png", "image/jpeg" und "image/gif" hochgeladen werden.
 
+{assign var="uploadshown" value=false}
 <ol>
 {for $i = 1 to $projekt.numSlot}
 <li>
@@ -55,6 +56,8 @@ Es können nur Dateien vom Typ "image/png", "image/jpeg" und "image/gif" hochgel
 <input type="submit" value="Bild herunterladen">
 </form>
  {else}
+  {if !$uploadshown}
+   {assign var="uploadshown" value=true}
 <form action="index.php" method="POST" enctype="multipart/form-data">
  <input type="hidden" name="action" value="addslot">
  <input type="hidden" name="slotIdx" value="{$i}">
@@ -64,6 +67,9 @@ Es können nur Dateien vom Typ "image/png", "image/jpeg" und "image/gif" hochgel
 <label for="bild">Bild:</label> <input name="bild" type="file" size="50" accept="image/png,image/jpeg,image/gif">
 <input type="submit" value="Bild hochladen">
 </form>
+  {else}
+   <i>frei</i>
+  {/if}
  {/if}
 </li>
 {/for}
