@@ -10,4 +10,4 @@ $SIMPLESAML = dirname(dirname(dirname(__FILE__)))."/simplesamlphp";
 $SIMPLESAMLAUTHSOURCE = "wayfinder";
 $ADMINGROUP = "konsul,admin";
 $SESSIONNAME = "fotowettbewerb";
-$UUIDPREFIX = "sturailmenau";
+$UUIDPREFIX = "FIXME";
