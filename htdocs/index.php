@@ -108,5 +108,5 @@ default:
 $data = getData($id);
 $smarty->assignByRef('data',$data);
 $smarty->assign('projekt',$projekt);
-
+$smarty->assign('upload_max_filesize', ini_get('upload_max_filesize'));
 $smarty->display('layout.tpl');

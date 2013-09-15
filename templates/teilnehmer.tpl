@@ -26,8 +26,6 @@
 
 <h2>Eingereichte Bilder</h2>
 
-Es können nur Dateien vom Typ "image/png", "image/jpeg" und "image/gif" hochgeladen werden.
-
 {assign var="uploadshown" value=false}
 <ol>
 {for $i = 1 to $projekt.numSlot}
@@ -67,6 +65,9 @@ Es können nur Dateien vom Typ "image/png", "image/jpeg" und "image/gif" hochgel
 <label for="bild">Bild:</label> <input name="bild" type="file" size="50" accept="image/png,image/jpeg,image/gif">
 <input type="submit" value="Bild hochladen">
 </form>
+
+Es können nur Dateien vom Typ "image/png", "image/jpeg" und "image/gif" hochgeladen werden, die höchstens {$upload_max_filesize|escape} Bytes groß sind.
+
   {else}
    <i>frei</i>
   {/if}
