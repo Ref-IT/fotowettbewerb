@@ -56,7 +56,13 @@ case "addslot":
       $_SESSION["message"] = "Ungültiger Bild-Typ - nur JPEG, PNG und GIF - Dateien erlaubt.";
     } else {
       $data = file_get_contents($_FILES["bild"]["tmp_name"]);
-      addDataToSlot($id, $slotId, $_REQUEST["name"], $mime, $data);
+      $name = trim($_REQUEST["name"]);
+      if ($name == "") {
+        $name = $_FILES["bild"]["name"];
+      } else {
+        $name .= " (".$_FILES["bild"]["name"].")";
+      }
+      addDataToSlot($id, $slotId, $name, $mime, $data);
       $_SESSION["message"] = "Das Bild wurde gespeichert";
     }
   }
