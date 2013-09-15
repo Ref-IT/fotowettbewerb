@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="css/jquery-ui-1.10.3.custom.min.css" />
   <link rel="stylesheet" href="css/jquery-ui-timepicker-addon.css" />
   <link rel="stylesheet" href="css/table.css" />
+  <link rel="stylesheet" href="css/upload.css" />
   <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
   <script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>
   <script type="text/javascript" src="js/jquery-ui-i18n.js"></script>
@@ -14,6 +15,7 @@
   <script type="text/javascript" src="js/jquery-ui-timepicker-install.js"></script>
   <script type="text/javascript" src="js/jquery.autosize.js"></script>
   <script type="text/javascript" src="js/jquery.autosize-install.js"></script>
+  <script type="text/javascript" src="js/jquery.form.js"></script>
  </head>
  <body>
 

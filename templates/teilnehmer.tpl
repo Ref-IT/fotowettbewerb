@@ -56,17 +56,55 @@
  {else}
   {if !$uploadshown}
    {assign var="uploadshown" value=true}
-<form action="index.php" method="POST" enctype="multipart/form-data">
+<form action="index.php" method="POST" enctype="multipart/form-data" id="addslot{$i}">
  <input type="hidden" name="action" value="addslot">
  <input type="hidden" name="slotIdx" value="{$i}">
  <input type="hidden" name="uuid" value="{$uuid|escape}">
  <input type="hidden" name="csrf" value="{$csrf|escape}">
 <label for="name">Name:</label> <input type="text" name="name" value="">
-<label for="bild">Bild:</label> <input name="bild" type="file" size="50" accept="image/png,image/jpeg,image/gif">
+<label for="bild">Bild:</label> <input name="bild" type="file" size="50" accept="image/png,image/jpeg,image/gif,*.png,*.jpeg,*.jpg,*.gif">
 <input type="submit" value="Bild hochladen">
 </form>
 
-Es können nur Dateien vom Typ "image/png", "image/jpeg" und "image/gif" hochgeladen werden, die höchstens {$upload_max_filesize|escape} Bytes groß sind.
+<p>Es können nur Dateien vom Typ "image/png", "image/jpeg" und "image/gif" hochgeladen werden, die höchstens {$upload_max_filesize|escape} Bytes groß sind.</p>
+
+<div id="progress{$i}" class="progress" style="display: none;"><div id="bar{$i}" class="bar"></div><div id="percent{$i}" class="percent">0%</div></div>
+<div id="status{$i}" style="display: none;"></div>
+
+<script type="text/javascript">
+$(function() {ldelim}
+  var progress = $('#progress{$i}');
+  var bar = $('#bar{$i}');
+  var percent = $('#percent{$i}');
+  var status = $('#status{$i}');
+
+  var options = {ldelim}
+    beforeSend: function() {ldelim}
+        status.css('display','');
+        progress.css('display','');
+        var percentVal = '0%';
+        bar.width(percentVal)
+        percent.html(percentVal);
+    {rdelim},
+    uploadProgress: function(event, position, total, percentComplete) {ldelim}
+        var percentVal = percentComplete + '%';
+        bar.width(percentVal)
+        percent.html(percentVal);
+    {rdelim},
+    success: function() {ldelim}
+        var percentVal = '100%';
+        bar.width(percentVal)
+        percent.html(percentVal);
+        self.location.reload();
+    {rdelim},
+	  complete: function(xhr) {ldelim}
+		    status.html(xhr.responseText);
+        status.css('display','none');
+  	{rdelim}
+  {rdelim};
+  $('#addslot{$i}').ajaxForm(options);
+{rdelim});
+</script>
 
   {else}
    <i>frei</i>
