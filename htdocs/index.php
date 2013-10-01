@@ -40,6 +40,8 @@ case "tos":
     httperror("Die AGB wurden zwischenzeitlich verändert.");
     exit;
   }
+  delSlot($id, SLOT_TOS);
+  delSlot($id, SLOT_MAIL);
   addDataToSlot($id, SLOT_TOS, "AGB", "text/plain", $projekt["tos"]);
   addDataToSlot($id, SLOT_MAIL, "eMail", "text/plain", getUserMail());
   $_SESSION["message"] = "Sie haben den Nutzungsbedingungen zugestimmt.";
