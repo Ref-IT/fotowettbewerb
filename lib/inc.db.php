@@ -6,6 +6,7 @@ $pdo = new PDO($DB_DSN, $DB_USERNAME, $DB_PASSWORD, array(PDO::MYSQL_ATTR_INIT_C
 
 define("SLOT_TOS", -1);
 define("SLOT_MAIL", -2);
+define("SLOT_NAME", -3);
 define("SLOT_BASE", 0);
 
 $pdo->query("

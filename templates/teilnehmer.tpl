@@ -12,11 +12,15 @@
 <input type="hidden" name="csrf" value="{$csrf|escape}">
 <input type="hidden" name="tos" value="{md5($projekt.tos)}">
 <fieldset><legend>Nutzungsbedingungen</legend>
-<pre>
-{$projekt.tos}
-</pre>
-<input type="submit" value="Zustimmen">
+<div class="prebox">
+{$projekt.tos|escape}
+</div>
 </fieldset>
+<fieldset>
+ <legend>Persönliche Informationen</legend>
+ <label for="name">Vollständiger Name:</label> <input type="text" value="{$regname|escape}" name="name" placeholder="Vorname Nachname"/>
+</fieldset>
+<input type="submit" value="Zustimmen und Absenden">
 </form>
 
 {else}
@@ -115,9 +119,14 @@ $(function() {ldelim}
 </ol>
 
 <h2>Nutzungsbedingungen</h2>
-Du hast bereits folgenden Nutzungsbedingungen zugestimmt:
-<pre>
-{$projekt.tos}
-</pre>
+<div>
+Hallo {$regname|escape},<br/>
+<br/>
+du hast bereits folgenden Nutzungsbedingungen zugestimmt:
+</div>
+
+<div class="prebox">
+{$projekt.tos|escape}
+</div>
 
 {/if}

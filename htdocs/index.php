@@ -20,10 +20,16 @@ $smarty->assign('content','teilnehmer');
 $smarty->assign('contact',$projekt["contact"]);
 $smarty->assign('uuid',$projekt["uuid"]);
 $userTOS = getDataBySlot($id, SLOT_TOS);
-if ($userTOS === false || $userTOS["data"] !== $projekt["tos"]) {
+$userNAME = getDataBySlot($id, SLOT_NAME);
+if ($userTOS === false || $userTOS["data"] !== $projekt["tos"] || $userNAME === false) {
   $smarty->assign('needtos',TRUE);
 } else {
   $smarty->assign('needtos',FALSE);
+}
+if ($userNAME === false) {
+  $smarty->assign('regname','');
+} else {
+  $smarty->assign('regname', $userNAME["data"]);
 }
 
 if (isset($_REQUEST["slotIdx"])) {
@@ -40,13 +46,19 @@ case "tos":
     httperror("Die AGB wurden zwischenzeitlich verändert.");
     exit;
   }
-  delSlot($id, SLOT_TOS);
-  delSlot($id, SLOT_MAIL);
-  addDataToSlot($id, SLOT_TOS, "AGB", "text/plain", $projekt["tos"]);
-  addDataToSlot($id, SLOT_MAIL, "eMail", "text/plain", getUserMail());
-  $_SESSION["message"] = "Sie haben den Nutzungsbedingungen zugestimmt.";
-  header("Location: index.php?uuid={$_REQUEST["uuid"]}");
-  exit;
+  if (empty($_REQUEST["name"])) {
+    $_SESSION["message"] = "Sie haben keinen eigenen Namen angegeben.";
+  } else {
+    delSlot($id, SLOT_TOS);
+    delSlot($id, SLOT_MAIL);
+    delSlot($id, SLOT_NAME);
+    addDataToSlot($id, SLOT_TOS, "AGB", "text/plain", $projekt["tos"]);
+    addDataToSlot($id, SLOT_MAIL, "eMail", "text/plain", getUserMail());
+    addDataToSlot($id, SLOT_NAME, "Name", "text/plain", $_REQUEST["name"]);
+    $_SESSION["message"] = "Sie haben den Nutzungsbedingungen zugestimmt.";
+    header("Location: index.php?uuid={$_REQUEST["uuid"]}");
+    exit;
+  }
   break;
 case "addslot":
   if (!isset($_REQUEST["slotIdx"])) httperror("Missing slotIdx");
