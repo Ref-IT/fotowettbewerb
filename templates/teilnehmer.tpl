@@ -73,7 +73,7 @@
 <p>Es können nur Dateien vom Typ "image/png", "image/jpeg" und "image/gif" hochgeladen werden, die höchstens {$upload_max_filesize|escape} Bytes groß sind.</p>
 
 <div id="progress{$i}" class="progress" style="display: none;"><div id="bar{$i}" class="bar"></div><div id="percent{$i}" class="percent">0%</div></div>
-<div id="status{$i}" style="display: none;"></div>
+<div id="status{$i}" style="display: none; white-space: pre-wrap;"></div>
 
 <script type="text/javascript">
 $(function() {ldelim}
@@ -99,11 +99,12 @@ $(function() {ldelim}
         var percentVal = '100%';
         bar.width(percentVal)
         percent.html(percentVal);
+        status.css('display','none');
         self.location.reload();
     {rdelim},
 	  complete: function(xhr) {ldelim}
-		    status.html(xhr.responseText);
-        status.css('display','none');
+		    status.text(xhr.responseText);
+        status.css('background-color','red');
   	{rdelim}
   {rdelim};
   $('#addslot{$i}').ajaxForm(options);
