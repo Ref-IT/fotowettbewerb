@@ -19,7 +19,7 @@
  <li> <label for="name">Name:</label> <input type="text" name="name" value="{$projekt.name|escape}"> </li>
  <li> <label for="start">Start:</label> <input class="datetimepicker" id="pstart" type="datetime-local" name="start" value="{$projekt.start|date_format:"%Y-%m-%dT%H:%M:%S"}"> </li>
  <li> <label for="end">Ende:</label> <input class="datetimepicker" id="pend" type="datetime-local" name="end" value="{if $projekt.end}{$projekt.end|date_format:"%Y-%m-%dT%H:%M:%S"}{/if}"> </li>
- <li> <label for="tos">AGB:</label> <textarea name="tos" style="vertical-align:text-top;">{if $projekt.tos}{$projekt.tos|escape}{/if}</textarea> </li>
+ <li> <label for="tos">AGB:</label> <textarea name="tos" style="vertical-align:text-top; min-width: 600px;">{if $projekt.tos}{$projekt.tos|escape}{/if}</textarea> </li>
  <li> <label for="logo">Logo:</label> <span>
       <input name="logo" type="file" size="50" accept="image/png,image/jpeg,image/gif">
       {if $projekt.logo_data}

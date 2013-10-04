@@ -57,10 +57,22 @@ CREATE TABLE IF NOT EXISTS `{$DB_PREFIX}dateien` (
   `nutzer` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `mimetype` varchar(255) NOT NULL,
-  `data` longblob NOT NULL,
   PRIMARY KEY `unique_slot` (`projekt_id`,`slot`,`nutzer`),
   KEY `search_nutzer` (`projekt_id`,`nutzer`),
   FOREIGN KEY (projekt_id) REFERENCES {$DB_PREFIX}projekt(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+") or httperror(print_r($pdo->errorInfo(),true));
+
+$pdo->query("
+CREATE TABLE IF NOT EXISTS `{$DB_PREFIX}dateien_data` (
+  `projekt_id` int(11) NOT NULL,
+  `slot` int(11) NOT NULL,
+  `nutzer` varchar(255) NOT NULL,
+  `part` int(11) NOT NULL,
+  `data` longblob NOT NULL,
+  PRIMARY KEY `unique_part` (`projekt_id`,`slot`,`nutzer`,`part`),
+  KEY `search_nutzer` (`projekt_id`,`nutzer`),
+  FOREIGN KEY (projekt_id, slot, nutzer) REFERENCES {$DB_PREFIX}dateien(projekt_id, slot, nutzer) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ") or httperror(print_r($pdo->errorInfo(),true));
 
@@ -187,7 +199,9 @@ function iterateAllData($id, $ctx, $callback) {
   global $pdo, $DB_PREFIX;
   $query = $pdo->prepare("SELECT * FROM {$DB_PREFIX}dateien WHERE projekt_id = ?");
   $query->execute(Array($id)) or httperror(print_r($query->errorInfo(),true));
-  while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+  $dateien = $query->fetchall(PDO::FETCH_ASSOC);
+  foreach ($dateien as $row) {
+    $row["data"] = getContentBySlot($row["projekt_id"], $row["nutzer"], $row["slot"]);
     $callback($row, $ctx);
   }
 }
@@ -210,14 +224,37 @@ function getDataBySlot($id, $slot) {
   $query = $pdo->prepare("SELECT * FROM {$DB_PREFIX}dateien WHERE projekt_id = ? AND nutzer = ? AND slot = ?");
   $query->execute(Array($id, $username, $slot)) or httperror(print_r($query->errorInfo(),true));
   if ($query->rowCount() == 0) return false;
-  return $query->fetch(PDO::FETCH_ASSOC);
+  $ret = $query->fetch(PDO::FETCH_ASSOC);
+  $ret["data"] = getContentBySlot($id, $username, $slot);
+  return $ret;
+}
+
+function getContentBySlot($id, $username, $slot) {
+  global $pdo, $DB_PREFIX;
+
+  $query = $pdo->prepare("SELECT data FROM `{$DB_PREFIX}dateien_data` WHERE projekt_id = ? AND nutzer = ? AND slot = ? ORDER BY part");
+  $query->execute(Array($id, $username, $slot)) or httperror(print_r($query->errorInfo(),true));
+  if ($query->rowCount() == 0) return $ret;
+  $ret = "";
+  while ($row = $query->fetch(PDO::FETCH_ASSOC))
+    $ret .= $row["data"];
+  return $ret;
 }
 
 function addDataToSlot($id, $slot, $name, $mime, $data) {
   global $pdo, $DB_PREFIX, $UUIDPREFIX;
   $username = getUsername();
-  $query = $pdo->prepare("INSERT INTO {$DB_PREFIX}dateien(projekt_id, nutzer, slot, name, mimetype, data) VALUES (?, ?, ?, ?, ?, ?)");
-  $query->execute(Array($id, $username, $slot, $name, $mime, $data)) or httperror(print_r($query->errorInfo(),true));
+  $pdo->beginTransaction();
+  $query = $pdo->prepare("INSERT INTO {$DB_PREFIX}dateien(projekt_id, nutzer, slot, name, mimetype) VALUES (?, ?, ?, ?, ?)");
+  $query->execute(Array($id, $username, $slot, $name, $mime)) or httperror(print_r($query->errorInfo(),true));
+  if ($data !== NULL) {
+    $query = $pdo->prepare("INSERT INTO {$DB_PREFIX}dateien_data(projekt_id, nutzer, slot, part, data) VALUES (?, ?, ?, ?, ?)");
+    $datas = str_split($data, 1024 * 10);
+    foreach ($datas as $i => $data) {
+      $query->execute(Array($id, $username, $slot, $i, $data)) or httperror(print_r($query->errorInfo(),true));
+    }
+  }
+  $pdo->commit();
 }
 
 function renameSlot($id, $slot, $name) {
@@ -230,7 +267,9 @@ function renameSlot($id, $slot, $name) {
 function delSlot($id, $slot) {
   global $pdo, $DB_PREFIX;
   $username = getUsername();
-  $query = $pdo->prepare("DELETE FROM {$DB_PREFIX}dateien WHERE projekt_id = ? AND nutzer = ? AND slot = ? LIMIT 1");
+  $query = $pdo->prepare("DELETE FROM {$DB_PREFIX}dateien_data WHERE projekt_id = ? AND nutzer = ? AND slot = ?");
+  $query->execute(Array($id, $username, $slot)) or httperror(print_r($query->errorInfo(),true));
+  $query = $pdo->prepare("DELETE FROM {$DB_PREFIX}dateien WHERE projekt_id = ? AND nutzer = ? AND slot = ?");
   $query->execute(Array($id, $username, $slot)) or httperror(print_r($query->errorInfo(),true));
 }
 
